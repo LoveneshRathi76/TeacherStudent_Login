@@ -1,0 +1,22 @@
+.cardBox {
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.2s ease-in-out;
+  background: #fff;
+  padding: 15px;
+}
+
+.cardBox:hover {
+  transform: scale(1.05);
+  box-shadow: 0px 4px 12px rgba(0,0,0,0.2);
+}
+
+.imgRound {
+  border-radius: 50%;     /* circle banane ke liye */
+  width: 120px;
+  height: 120px;
+  object-fit: cover;      /* image crop ho ke fit ho jaye */
+  display: block;         /* center karne ke liye */
+  margin: 10px auto;      /* horizontally center */
+  border: 3px solid #28a745; /* green border for style */
+}

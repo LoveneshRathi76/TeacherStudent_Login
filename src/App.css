@@ -1,0 +1,32 @@
+/* General Layout */
+body {
+  background: #f8f9fa;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.App {
+  padding: 20px;
+}
+
+/* Login */
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 90vh;
+}
+
+/* Dashboard */
+.dashboard-container {
+  max-width: 800px;
+  margin: auto;
+}
+
+/* Student Cards */
+.student-card {
+  transition: transform 0.2s ease-in-out;
+}
+.student-card:hover {
+  transform: scale(1.02);
+}
