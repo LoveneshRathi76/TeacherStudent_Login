@@ -1,13 +1,15 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import AppNavbar from "./components/Navbar";
-import Home from "./components/Home";
-import Contact from "./components/Contact";
-import Achievers from "./components/Achievers";
-import TeacherLogin from "./components/TeacherLogin";
-import TeacherDashboard from "./components/TeacherDashboard";
-import StudentLogin from "./components/StudentLogin";
-import StudentDashboard from "./components/StudentDashboard";
+import AppNavbar from "./components/Navbar/Navbar";
+import Home from "./components/Pages/Home";
+import Contact from "./components/Pages/Contact";
+import Achievers from "./components/Pages/Achievers";
+import TeacherLogin from "./components/auth/TeacherLogin";
+import TeacherDashboard from "./components/dashboard/TeacherDashboard";
+import StudentLogin from "./components/auth/StudentLogin";
+import StudentDashboard from "./components/dashboard/StudentDashboard";
 
+
+ import "./App.css";
 function App() {
   return (
     <Router>
@@ -20,10 +22,8 @@ function App() {
         <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
         <Route path="/student-login" element={<StudentLogin />} />
         <Route path="/student-dashboard" element={<StudentDashboard />} />
-        <Route
-          path="*"
-          element={<h2 style={{ textAlign: "center", marginTop: "50px" }}>Page Not Found</h2>}
-        />
+       <Route path="*" element={<Home />} />
+
       </Routes>
     </Router>
   );
