@@ -4,6 +4,7 @@ function Achievers() {
   return (
     <div style={{ marginTop: "100px", textAlign: "center" }}>
       <h2>Achievers Page</h2>
+      <h2>Lovenesh rathi</h2>
       <p>List of achievers will appear here.</p>
     </div>
   );
