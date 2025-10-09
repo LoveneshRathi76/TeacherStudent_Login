@@ -7,14 +7,31 @@ const TeacherLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = (e) => {
+  // ------------------ Backend-connected login ------------------
+  const handleLogin = async (e) => {
     e.preventDefault();
-    // Simple hardcoded login
-    if (email === "teacher@example.com" && password === "123456") {
-      localStorage.setItem("teacherLoggedIn", "true");
-      navigate("/teacher-dashboard");
-    } else {
-      alert("Invalid credentials!");
+    try {
+      // Login request
+      const response = await fetch("http://localhost:5000/api/teacher/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Login success
+        localStorage.setItem("teacherLoggedIn", "true");
+        localStorage.setItem("teacher", JSON.stringify(data.teacher));
+        navigate("/teacher-dashboard"); // Redirect to dashboard
+      } else {
+        // Login failed
+        alert(data.message);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Server error!");
     }
   };
 

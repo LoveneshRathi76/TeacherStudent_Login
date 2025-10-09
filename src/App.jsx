@@ -1,4 +1,5 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+// src/App.jsx
+import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import AppNavbar from "./components/Navbar/Navbar";
 import Home from "./components/Pages/Home";
 import Contact from "./components/Pages/Contact";
@@ -8,8 +9,8 @@ import TeacherDashboard from "./components/dashboard/TeacherDashboard";
 import StudentLogin from "./components/auth/StudentLogin";
 import StudentDashboard from "./components/dashboard/StudentDashboard";
 
+import "./App.css";
 
- import "./App.css";
 function App() {
   return (
     <Router>
@@ -22,8 +23,8 @@ function App() {
         <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
         <Route path="/student-login" element={<StudentLogin />} />
         <Route path="/student-dashboard" element={<StudentDashboard />} />
-       <Route path="*" element={<Home />} />
-
+        {/* Agar koi unknown route ho to Home pe redirect */}
+        <Route path="*" element={<Home />} />
       </Routes>
     </Router>
   );

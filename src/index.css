@@ -9,3 +9,65 @@ body {
 .card {
   border-radius: 12px;
 }
+.teacher-card {
+  width: 300px;          /* कार्ड की width छोटी */
+  min-height: 600px;     /* कार्ड की height बड़ी */
+  border-radius: 20px;   /* ज्यादा rounded */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+   margin: 50px;
+}
+.text-center h2 {
+  font-size: 1.8rem;
+  color: #0d6efd; /* primary color */
+}
+
+.teacher-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
+}
+
+.card-img-wrapper {
+  height: 340px;   /* image की height बढ़ाई */
+  overflow: hidden;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+}
+
+.teacher-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.teacher-heading h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #0d6efd; /* primary blue color */
+  line-height: 1.3;
+  margin-bottom: 0.5rem;
+}
+
+.teacher-heading h2 span {
+  color: #fd7e14; /* highlight color - orange */
+}
+
+.teacher-heading .sub-text {
+  font-size: 1rem;
+  color: #6c757d; /* muted gray */
+  font-weight: 500;
+}
+.teacher-heading h2 {
+  position: relative;
+  display: inline-block;
+}
+
+.teacher-heading h2::after {
+  content: "";
+  width: 50%;
+  height: 4px;
+  background-color: #fd7e14;
+  display: block;
+  margin: 5px auto 0 auto;
+  border-radius: 2px;
+}
+

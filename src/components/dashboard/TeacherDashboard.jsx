@@ -29,19 +29,22 @@ const TeacherDashboard = () => {
   const [selectedStudentIdx, setSelectedStudentIdx] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState("January");
 
-  // NEW: for updating student info
   const [showStudentUpdateModal, setShowStudentUpdateModal] = useState(false);
   const [updateForm, setUpdateForm] = useState({});
 
+  // ---------------- FETCH STUDENTS ----------------
   useEffect(() => {
-    const savedStudents = JSON.parse(localStorage.getItem("students")) || [];
-    setStudents(savedStudents);
+    const fetchStudents = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/students");
+        const data = await response.json();
+        setStudents(data.students || []);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchStudents();
   }, []);
-
-  const saveStudents = (data) => {
-    setStudents(data);
-    localStorage.setItem("students", JSON.stringify(data));
-  };
 
   const handleLogout = () => {
     localStorage.removeItem("teacherLoggedIn");
@@ -74,20 +77,36 @@ const TeacherDashboard = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  // ---------------- ADD STUDENT ----------------
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (teacherPasswordInput !== TEACHER_PASSWORD) {
       alert("❌ Incorrect teacher password!");
       return;
     }
 
-    const newStudents = [...students, formData];
-    saveStudents(newStudents);
-    alert("✅ Student Added Successfully!");
-    setFormData({ name: "", fatherName: "", class: "", email: "", phone: "", password: "", photo: "", marks: {} });
-    setTeacherPasswordInput("");
+    try {
+      const response = await fetch("http://localhost:5000/api/teacher/add-student", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData)
+      });
+      const data = await response.json();
+      if (data.success) {
+        setStudents(data.students);
+        alert("✅ Student Added Successfully!");
+        setFormData({ name: "", fatherName: "", class: "", email: "", phone: "", password: "", photo: "", marks: {} });
+        setTeacherPasswordInput("");
+      } else {
+        alert("❌ Failed to add student!");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Server error!");
+    }
   };
 
+  // ---------------- UPDATE MARKS ----------------
   const handleOpenUpdate = (index) => {
     setSelectedStudentIdx(index);
     setSelectedMonth("January");
@@ -99,7 +118,7 @@ const TeacherDashboard = () => {
     const student = updatedStudents[selectedStudentIdx];
     if (!student.marks[selectedMonth]) student.marks[selectedMonth] = {};
     student.marks[selectedMonth][subject] = Number(value);
-    saveStudents(updatedStudents);
+    setStudents(updatedStudents);
   };
 
   const handleAttendanceChange = (subject, value) => {
@@ -108,12 +127,27 @@ const TeacherDashboard = () => {
     if (!student.marks[selectedMonth]) student.marks[selectedMonth] = {};
     if (!student.marks[selectedMonth].attendance) student.marks[selectedMonth].attendance = {};
     student.marks[selectedMonth].attendance[subject] = Number(value);
-    saveStudents(updatedStudents);
+    setStudents(updatedStudents);
   };
 
-  const handleSaveUpdate = () => {
-    setShowUpdateModal(false);
-    alert("✅ Marks & Attendance Updated Successfully!");
+  const handleSaveUpdate = async () => {
+    const student = students[selectedStudentIdx];
+    try {
+      const response = await fetch("http://localhost:5000/api/teacher/add-student-data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ studentId: student.id, marks: [student.marks[selectedMonth]] })
+      });
+      const data = await response.json();
+      if (data.success) {
+        alert("✅ Marks & Attendance Updated Successfully!");
+        setShowUpdateModal(false);
+        setStudents(data.students);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Server error!");
+    }
   };
 
   const handleDeleteMonth = () => {
@@ -126,7 +160,7 @@ const TeacherDashboard = () => {
     if (student.marks[selectedMonth]) {
       const { [selectedMonth]: removed, ...restMarks } = student.marks;
       student.marks = restMarks;
-      saveStudents(updatedStudents);
+      setStudents(updatedStudents);
       alert(`✅ Marks & Attendance for ${selectedMonth} deleted!`);
       setSelectedMonth("");
       setShowUpdateModal(false);
@@ -135,17 +169,23 @@ const TeacherDashboard = () => {
     }
   };
 
-  const handleDeleteStudent = (index) => {
+  const handleDeleteStudent = async (index) => {
     const confirmDelete = window.confirm(`Are you sure you want to delete student ${students[index].name}?`);
     if (!confirmDelete) return;
 
-    const updatedStudents = [...students];
-    updatedStudents.splice(index, 1);
-    saveStudents(updatedStudents);
-    alert(`✅ Student ${students[index].name} deleted!`);
+    try {
+      const response = await fetch(`http://localhost:5000/api/teacher/delete-student/${students[index].id}`, {
+        method: "DELETE",
+      });
+      const data = await response.json();
+      if (data.success) setStudents(data.students);
+    } catch (err) {
+      console.error(err);
+      alert("Server error!");
+    }
   };
 
-  // ===================== STUDENT INFO UPDATE =====================
+  // ---------------- UPDATE STUDENT INFO ----------------
   const handleOpenStudentUpdate = (index) => {
     setSelectedStudentIdx(index);
     setUpdateForm({ ...students[index] });
@@ -168,17 +208,28 @@ const TeacherDashboard = () => {
     }
   };
 
-  const handleSaveStudentUpdate = () => {
-    const updatedStudents = [...students];
-    updatedStudents[selectedStudentIdx] = updateForm;
-    saveStudents(updatedStudents);
-    setShowStudentUpdateModal(false);
-    alert("✅ Student details updated successfully!");
+  const handleSaveStudentUpdate = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/teacher/update-student", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updateForm)
+      });
+      const data = await response.json();
+      if (data.success) {
+        setStudents(data.students);
+        setShowStudentUpdateModal(false);
+        alert("✅ Student details updated successfully!");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Server error!");
+    }
   };
-  // ================================================================
 
   return (
     <Container className="mt-4">
+      {/* HEADER */}
       <Row className="mb-4 align-items-center">
         <Col><h2 className="text-primary mt-5">👨‍🏫 Teacher Dashboard</h2></Col>
         <Col className="text-end">
@@ -186,11 +237,12 @@ const TeacherDashboard = () => {
         </Col>
       </Row>
 
-      {/* Add Student Form */}
+      {/* ADD STUDENT */}
       <Card className="mb-4 shadow-sm">
         <Card.Header className="bg-primary text-white">➕ Add New Student</Card.Header>
         <Card.Body>
           <Form onSubmit={handleSubmit}>
+            {/* Name & Father's Name */}
             <Row className="mb-3">
               <Col md={6}>
                 <Form.Group>
@@ -206,6 +258,7 @@ const TeacherDashboard = () => {
               </Col>
             </Row>
 
+            {/* Class, Email, Password */}
             <Row className="mb-3">
               <Col md={4}>
                 <Form.Group>
@@ -233,6 +286,7 @@ const TeacherDashboard = () => {
               </Col>
             </Row>
 
+            {/* Phone, Photo, Teacher Password */}
             <Row className="mb-3">
               <Col md={4}>
                 <Form.Group>
@@ -261,7 +315,7 @@ const TeacherDashboard = () => {
         </Card.Body>
       </Card>
 
-      {/* Students Table */}
+      {/* STUDENTS TABLE */}
       <Card className="shadow-sm">
         <Card.Header className="bg-success text-white">📋 Student List</Card.Header>
         <Card.Body className="p-0">
@@ -282,9 +336,7 @@ const TeacherDashboard = () => {
             <tbody>
               {students.map((stu, idx) => (
                 <tr key={idx}>
-                  <td>
-                    {stu.photo ? <img src={stu.photo} alt={stu.name} style={{ width: "50px", height: "50px", borderRadius: "50%" }} /> : "No Photo"}
-                  </td>
+                  <td>{stu.photo ? <img src={stu.photo} alt={stu.name} style={{ width: "50px", height: "50px", borderRadius: "50%" }} /> : "No Photo"}</td>
                   <td>{stu.name}</td>
                   <td>{stu.fatherName}</td>
                   <td>{stu.class}</td>
@@ -315,7 +367,7 @@ const TeacherDashboard = () => {
         </Card.Body>
       </Card>
 
-      {/* Update Marks Modal */}
+      {/* UPDATE MARKS MODAL */}
       <Modal show={showUpdateModal} onHide={() => setShowUpdateModal(false)}>
         <Modal.Header closeButton className="bg-info text-white">
           <Modal.Title>Update Marks & Attendance - {students[selectedStudentIdx]?.name}</Modal.Title>
@@ -361,7 +413,7 @@ const TeacherDashboard = () => {
         </Modal.Footer>
       </Modal>
 
-      {/* Update Student Info Modal */}
+      {/* UPDATE STUDENT INFO MODAL */}
       <Modal show={showStudentUpdateModal} onHide={() => setShowStudentUpdateModal(false)}>
         <Modal.Header closeButton className="bg-primary text-white">
           <Modal.Title>Update Student Info - {updateForm.name}</Modal.Title>

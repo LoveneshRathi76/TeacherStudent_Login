@@ -7,22 +7,31 @@ function StudentLogin() {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  // ------------------ Backend-connected login ------------------
+  const handleLogin = async (e) => {
     e.preventDefault();
-    const students = JSON.parse(localStorage.getItem("students")) || [];
-    
-    const student = students.find(
-      (s) =>
-        s.email.toLowerCase().trim() === email.toLowerCase().trim() &&
-        s.password === password
-    );
+    try {
+      const response = await fetch("http://localhost:5000/api/student/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
 
-    if (student) {
-      localStorage.setItem("studentLoggedIn", true);
-      localStorage.setItem("student", JSON.stringify(student));
-      navigate("/student-dashboard");
-    } else {
-      alert("❌ Invalid email or password!");
+      const data = await response.json();
+
+      if (data.success) {
+        // Login success
+        localStorage.setItem("studentLoggedIn", true);
+        // **Marks ke saath student object save karo**
+        localStorage.setItem("student", JSON.stringify(data.student));
+        navigate("/student-dashboard");
+      } else {
+        // Login failed
+        alert(data.message);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Server error!");
     }
   };
 
@@ -42,6 +51,7 @@ function StudentLogin() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
+                    autoComplete="username"
                   />
                 </Form.Group>
 
