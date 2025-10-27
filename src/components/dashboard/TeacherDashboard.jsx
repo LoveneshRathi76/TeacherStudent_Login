@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 const TeacherDashboard = () => {
   const navigate = useNavigate();
-  const TEACHER_PASSWORD = "admin123";
+  const TEACHER_PASSWORD = "gujjar@12";
 
   const subjectsByClass = {
     "9": ["Math", "English", "Science"],

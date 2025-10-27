@@ -1,0 +1,42 @@
+/* Make Offcanvas background slightly translucent */
+.custom-offcanvas {
+  background-color: rgba(33, 37, 41, 0.95);
+  color: white;
+}
+
+/* Navbar link styling */
+.nav-link {
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: #6e6e6ee7 !important;
+}
+
+/* Dropdown styling */
+.dropdown-menu {
+  background-color: #212529;
+  border: none;
+}
+
+.dropdown-item {
+  color: white !important;
+}
+
+.dropdown-item:hover {
+  background-color: #0d6efd;
+  color: #fff !important;
+}
+@media (max-width: 991px) {
+  .offcanvas-end {
+    width: 70% !important;
+    max-width: 100% !important;
+  }
+}
+
+/* Optional: Styling for better UI */
+.custom-offcanvas {
+  background-color: rgba(33, 37, 41, 0.98);
+  color: white;
+}
